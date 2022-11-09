@@ -1,9 +1,11 @@
 import { createRouter, createWebHistory } from 'vue-router'
+import { getAuth, onAuthStateChanged } from 'firebase/auth'
 import HomeView from '../views/HomeView.vue'
 import SignInView from '../views/SignInView.vue'
 import RegisterView from '../views/RegisterView.vue'
 import FeedView from '../views/FeedView.vue'
-/* eslint-disable */
+
+
 const routes = [
   {
     path: '/',
@@ -32,7 +34,7 @@ const routes = [
     path: '/feed',
     name: 'feed',
     component: FeedView,
-    meta:{
+    meta: {
       requiresAuth: true,
     }
   },
@@ -43,18 +45,33 @@ const router = createRouter({
   routes
 })
 
-router.beforeEach((to, from, next)=>{
-if(to.matched.some((record)=> record.meta.requiresAuth)){
-if(getAuth().currentUser){
-  next()
-}else{
-  alert('you dont have access')
-  next('/')
-}
-}else{
-  next()
-}
+const getCurrentUser = () => {
+  return new Promise((resolve) => {
+    const removeListener = onAuthStateChanged(
+      getAuth(),
+      (user) => {
+        removeListener()
+        resolve(user)
+      },
+      
+    )
   }
+  )
+}
+
+
+router.beforeEach(async (to, from, next) => {
+  if (to.matched.some((record) => record.meta.requiresAuth)) {
+    if (await getCurrentUser()) {
+      next()
+    } else {
+      alert('you dont have access')
+      next('/')
+    }
+  } else {
+    next()
+  }
+}
 )
 
 export default router

@@ -21,9 +21,9 @@ const password = ref('')
 const errMsg = ref()
 const router = useRouter()
 const signUp = ()=> {
-const auth = getAuth
+const auth = getAuth()
 
-    signInWithEmailAndPassword(getAuth(), email.value, password.value)
+    signInWithEmailAndPassword(auth, email.value, password.value)
 .then((data) =>{
     console.log('successfully signed in!')
 

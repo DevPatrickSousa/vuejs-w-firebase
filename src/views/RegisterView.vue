@@ -13,15 +13,18 @@
 <script setup>
 /* eslint-disable */
 import {ref} from 'vue'
-import {getAuth, createUserWithEmailAndPassword} from 'firebase/auth'
+import {getAuth, createUserWithEmailAndPassword, GoogleAuthProvider, signInWithPopup} from 'firebase/auth'
 import { useRouter } from 'vue-router';
 const email = ref('')
 const password = ref('')
 const router = useRouter()
 const signUp = ()=> {
-createUserWithEmailAndPassword(getAuth(), email.value, password.value)
+const auth = getAuth()
+
+createUserWithEmailAndPassword(auth, email.value, password.value)
 .then((data) =>{
     console.log('successfully registered!')
+    console.log(auth.currentUser)
     router.push('/feed')
 })
 .catch((error)=>{
@@ -31,7 +34,17 @@ createUserWithEmailAndPassword(getAuth(), email.value, password.value)
 )
 }
 const signInWithGoogle = ()=>{
+const provider = new GoogleAuthProvider()
+signInWithPopup(getAuth(), provider)
+.then((result) =>{
+    console.log(result.user)
+    router.push('/feed')
+})
+.catch((error) =>{
 
+}
+
+)
 }
 
 </script>
